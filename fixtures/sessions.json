@@ -1,0 +1,38 @@
+[
+{
+    "model": "cinema.session",
+    "pk": 1,
+    "fields": {
+      "start_date": "2021-10-3",
+      "end_date": "2021-10-28",
+      "start_time": "12:30",
+      "end_time": "15:00",
+      "hall": 2,
+      "price": 10
+    }
+  },
+  {
+    "model": "cinema.session",
+    "pk": 2,
+    "fields": {
+      "start_date": "2021-10-3",
+      "end_date": "2021-10-28",
+      "start_time": "16:00",
+      "end_time": "18:30",
+      "hall": 2,
+      "price": 10
+    }
+  },
+  {
+    "model": "cinema.session",
+    "pk": 3,
+    "fields": {
+      "start_date": "2021-10-3",
+      "end_date": "2021-10-28",
+      "start_time": "12:30",
+      "end_time": "15:00",
+      "hall": 3,
+      "price": 10
+    }
+  }
+]

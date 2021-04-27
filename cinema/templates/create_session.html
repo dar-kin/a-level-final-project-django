@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+
+{% block title %} Create session {% endblock %}
+{% block content %}
+<form method="post" action="{% url "cinema:createsession" %}">
+{{ form.as_p }}
+{% csrf_token %}
+</form>
+
+{% endblock %}

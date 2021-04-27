@@ -1,0 +1,32 @@
+[
+{
+    "model": "cinema.bookedsession",
+    "pk": 1,
+    "fields": {
+      "session": 1,
+      "user": 1,
+      "date": "2021-10-4",
+      "places": 1
+    }
+  },
+  {
+    "model": "cinema.bookedsession",
+    "pk": 2,
+    "fields": {
+      "session": 1,
+      "user": 1,
+      "date": "2021-10-4",
+      "places": 1
+    }
+  },
+  {
+    "model": "cinema.bookedsession",
+    "pk": 3,
+    "fields": {
+      "session": 1,
+      "user": 1,
+      "date": "2021-10-4",
+      "places": 1
+    }
+  }
+]

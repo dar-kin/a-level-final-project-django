@@ -1,0 +1,28 @@
+[
+  {
+    "model": "customuser.myuser",
+    "pk": 1,
+    "fields": {
+      "username": "darkin",
+      "password": "1",
+      "is_superuser": true
+    }
+  },
+  {
+    "model": "customuser.myuser",
+    "pk": 2,
+    "fields": {
+      "username": "darkin1",
+      "password": "1",
+      "wallet": 10000000
+    }
+  },
+  {
+    "model": "customuser.myuser",
+    "pk": 3,
+    "fields": {
+      "username": "darkin2",
+      "password": "1"
+    }
+  }
+]

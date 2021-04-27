@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+
+{% block title %} Update session {% endblock %}
+{% block content %}
+<form method="post" action="{% url "cinema:updatesession" object.id %}">
+{{ form.as_p }}
+{% csrf_token %}
+</form>
+
+{% endblock %}

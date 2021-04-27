@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block title %} Create hall {% endblock %}
+{% block content %}
+<form method="post" action="{% url "cinema:booksession" session date %}">
+{{ form.as_p }}
+    <input name="user" type="hidden" value="{{ request.user.id }}">
+    <input name="session" type="hidden" value="{{ session }}">
+    <input name="date" type="hidden" value="{{ date }}">
+{% csrf_token %}
+</form>
+
+{% endblock %}

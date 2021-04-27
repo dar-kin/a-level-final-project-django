@@ -1,0 +1,26 @@
+[
+  {
+    "model": "cinema.hall",
+    "pk": 1,
+    "fields": {
+      "name": "hall1",
+      "size": 10
+    }
+  },
+  {
+    "model": "cinema.hall",
+    "pk": 2,
+    "fields": {
+      "name": "hall2",
+      "size": 3
+    }
+  },
+  {
+    "model": "cinema.hall",
+    "pk": 3,
+    "fields": {
+      "name": "hall3",
+      "size": 3
+    }
+  }
+]
