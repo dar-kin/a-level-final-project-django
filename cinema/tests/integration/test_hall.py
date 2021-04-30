@@ -154,5 +154,29 @@ class TestUpdateHall(TestCase):
         self.assertEqual(message, str(list(messages)[0]))
 
 
+class TestHallList(TestCase):
+    fixtures = ["fixtures/users.json", "fixtures/halls.json"]
+
+    def setUp(self) -> None:
+        self.s_user = MyUser.objects.get(id=1)
+        self.user = MyUser.objects.get(id=2)
+
+    def test_unathorized_not_allowed(self):
+        response = self.client.get(reverse("cinema:halllist"))
+        self.assertEqual(403, response.status_code)
+
+    def test_not_superuser_not_allowed(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("cinema:halllist"))
+        self.assertEqual(403, response.status_code)
+
+    def test_hall_list(self):
+        halls = Hall.objects.all()
+        self.client.force_login(self.s_user)
+        response = self.client.get(reverse("cinema:halllist"))
+        self.assertQuerysetEqual(halls, response.context_data["object_list"], ordered=False)
+
+
+
 
 

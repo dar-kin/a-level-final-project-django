@@ -78,12 +78,8 @@ class TestBookedSessionForm(TestCase):
                 "fixtures/halls.json",
                 "fixtures/sessions.json"]
 
-    def setUp(self) -> None:
-        self.user = MyUser.objects.get(id=1)
-        self.session = Session.objects.get(id=1)
-
     def test_min_value_validator(self):
-        form = BookedSessionForm(data={"user": self.user, "session": self.session, "date": "2021-10-27", "places": 0})
+        form = BookedSessionForm(data={"places": 0})
         form.is_valid()
         error = "Ensure this value is greater than or equal to 1."
         self.assertEqual(error, form._errors["places"][0])

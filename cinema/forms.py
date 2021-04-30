@@ -1,6 +1,7 @@
 from datetime import date, time, datetime
 from django import forms
 from django.utils import timezone
+from django.contrib.admin.widgets import AdminDateWidget, AdminTimeWidget
 from .models import Hall, Session, BookedSession
 
 
@@ -11,8 +12,10 @@ class HallForm(forms.ModelForm):
 
 
 class SessionForm(forms.ModelForm):
-    start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
-    end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
+    start_time = forms.TimeField()
+    end_time = forms.TimeField()
+    start_date = forms.DateField()
+    end_date = forms.DateField()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -32,10 +35,5 @@ class SessionForm(forms.ModelForm):
 class BookedSessionForm(forms.ModelForm):
 
     class Meta:
-        fields = ["session", "user", "date", "places"]
+        fields = ["places"]
         model = BookedSession
-        widgets = {
-            "session": forms.HiddenInput(),
-            "user": forms.HiddenInput(),
-            "date": forms.HiddenInput(),
-        }

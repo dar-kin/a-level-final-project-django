@@ -1,9 +1,10 @@
-from django.views.generic import CreateView, UpdateView
+from datetime import datetime, date
+from django.views.generic import CreateView, UpdateView, ListView
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.db.models import Sum
+from django.db.models import Sum, F
 from .forms import HallForm, SessionForm, BookedSessionForm
 from . import exceptions
 from .misc import SuperUserRequired
@@ -78,10 +79,12 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["session"] = self.kwargs["s"]
-        context["date"] = self.kwargs["date"]
-        booked_sessions = BookedSession.objects.filter(session=context["session"],
-                                                       date=context["date"]).aggregate(Sum("places"))
+        session = self.kwargs["s"]
+        date = self.kwargs["date"]
+        context["session"] = session
+        context["date"] = date
+        booked_sessions = BookedSession.objects.filter(session=session,
+                                                       date=date).aggregate(Sum("places"))
         places = booked_sessions["places__sum"]
         if not places:
             places = context["session"].hall.size
@@ -90,10 +93,13 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
         context["places"] = places
         return context
 
-
     def form_valid(self, form):
         try:
-            form.save()
+            booked_session = form.save(commit=False)
+            booked_session.user = self.request.user
+            booked_session.session = self.kwargs["s"]
+            booked_session.date = self.kwargs["date"]
+            booked_session.save()
         except exceptions.NoFreePlacesException:
             messages.add_message(self.request, messages.ERROR, "No free places")
             return redirect(self.request.path_info)
@@ -102,5 +108,43 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
             return redirect("/")
 
 
+class HallList(SuperUserRequired, ListView):
+    model = Hall
+    template_name = "hall_list.html"
+
+
+class SessionList(SuperUserRequired, ListView):
+    template_name = "session_list.html"
+    model = Session
+
+
+class ClientSessionList(ListView):
+    model = Session
+    template_name = "user_session_list.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        url_date = self.kwargs["date"]
+        context["object_list"] = context["object_list"].filter(start_date__lte=url_date, end_date__gte=url_date)
+        context["date"] = url_date
+        sort_options = ["start_time", "price"]
+        sort = self.kwargs.get("sort", None)
+        if sort in sort_options:
+            context["object_list"] = context["object_list"].order_by(sort)
+        return context
+
+
+class UserBookedSessionsList(LoginRequiredMixin, ListView):
+    model = BookedSession
+    template_name = "booked_sessions_list.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        context["object_list"] = context["object_list"].filter(user=self.request.user)
+        total_spent = context["object_list"].aggregate(total=Sum(F("session__price") * F("places")))["total"]
+        if not total_spent:
+            total_spent = 0
+        context["total_spent"] = total_spent
+        return context
 
 

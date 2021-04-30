@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+{% block title %} Session list {% endblock %}
+{% block content %}
+{% include "user.html" %}
+<div>Total money spent: {{ total_spent }}</div>
+<table border="1">
+<tr>
+    <td>Start time</td>
+    <td>End time</td>
+    <td>Start date</td>
+    <td>End date</td>
+    <td>Hall</td>
+    <td>Price</td>
+    <td>Booked places</td>
+</tr>
+{% for elem in object_list %}
+    <tr>
+    <td>{{ elem.session.start_time }}</td>
+    <td>{{ elem.session.end_time }}</td>
+    <td>{{ elem.session.start_date }}</td>
+    <td>{{ elem.session.end_date }}</td>
+    <td>{{ elem.session.hall.name}}</td>
+    <td>{{ elem.session.price }}</td>
+    <td>{{ elem.places }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

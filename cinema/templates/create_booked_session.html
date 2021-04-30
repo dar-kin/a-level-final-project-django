@@ -2,11 +2,11 @@
 
 {% block title %} Create hall {% endblock %}
 {% block content %}
+    {% include "user.html" %}
+    <div>Available places: {{ places }}</div>
 <form method="post" action="{% url "cinema:booksession" session date %}">
 {{ form.as_p }}
-    <input name="user" type="hidden" value="{{ request.user.id }}">
-    <input name="session" type="hidden" value="{{ session }}">
-    <input name="date" type="hidden" value="{{ date }}">
+    <input type="submit" value="Buy">
 {% csrf_token %}
 </form>
 

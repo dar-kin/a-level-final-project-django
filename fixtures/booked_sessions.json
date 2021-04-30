@@ -28,5 +28,25 @@
       "date": "2021-10-4",
       "places": 1
     }
+  },
+  {
+    "model": "cinema.bookedsession",
+    "pk": 4,
+    "fields": {
+      "session": 2,
+      "user": 3,
+      "date": "2021-10-4",
+      "places": 2
+    }
+  },
+  {
+    "model": "cinema.bookedsession",
+    "pk": 5,
+    "fields": {
+      "session": 2,
+      "user": 3,
+      "date": "2021-10-4",
+      "places": 1
+    }
   }
 ]

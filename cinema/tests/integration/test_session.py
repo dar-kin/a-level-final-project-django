@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import time, date
 from django.test import TestCase
 from django.urls import reverse
 from cinema.models import Hall, Session
@@ -172,3 +172,32 @@ class TestUpdateSession(TestCase):
         self.client.force_login(self.s_user)
         response = self.client.post(reverse("cinema:updatesession", args=[3]), self.correct_session2)
         self.assertRedirects(response, "/")
+
+
+class TestSessionList(TestCase):
+    fixtures = ["fixtures/users.json", "fixtures/halls.json", "fixtures/sessions.json"]
+
+    def setUp(self) -> None:
+        self.s_user = MyUser.objects.get(id=1)
+        self.user = MyUser.objects.get(id=2)
+
+    def test_unathorized_not_allowed(self):
+        response = self.client.get(reverse("cinema:sessionlist"))
+        self.assertEqual(403, response.status_code)
+
+    def test_not_superuser_not_allowed(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("cinema:sessionlist"))
+        self.assertEqual(403, response.status_code)
+
+    def test_hall_list(self):
+        sessions = Session.objects.all()
+        self.client.force_login(self.s_user)
+        response = self.client.get(reverse("cinema:sessionlist"))
+        self.assertQuerysetEqual(sessions, response.context_data["object_list"], ordered=False)
+
+
+class TestUserSessionList(TestCase):
+    def test_template(self):
+        response = self.client.get(reverse("cinema:clientsessionlist", args=[date(2021, 10, 4), "price"]))
+        self.assertTemplateUsed(response, "user_session_list.html")

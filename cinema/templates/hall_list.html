@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block title %} Hall list {% endblock %}
+{% block content %}
+    {% include "user.html" %}
+    <div><a href="{% url 'cinema:createhall' %}">Create hall</a> </div>
+<table border="1">
+<tr>
+    <td>Name</td>
+    <td>Size</td>
+</tr>
+{% for elem in object_list %}
+    <tr>
+    <td>{{ elem.name }}</td>
+    <td>{{ elem.size }}</td>
+    <td><a href="{% url 'cinema:updatehall' elem.id %}">Update</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

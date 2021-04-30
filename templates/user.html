@@ -1,0 +1,23 @@
+{% load alter_date %}
+ <table border="1">
+        <tr>
+<p>Hello {% if request.user.is_authenticated %}{{ request.user.username }}.
+    You have ${{ request.user.wallet }}.
+            <td><a href="{% url 'customuser:logout' %}">Logout</a></td>
+            <td><a href="{% url 'cinema:bookedsessionlist' %}">My orders</a></td>
+            {% if request.user.is_superuser %}
+                <td><a href="{% url 'cinema:halllist' %}">List of halls</a></td>
+                <td><a href="{% url 'cinema:sessionlist' %}">List of sessions</a></td>
+             {% endif %}
+
+    {% else %}Anonymous user. <a href="{% url 'customuser:login' %}">Please log in</a>
+    or <a href="{% url "customuser:register" %}">register</a>
+    {% endif %}
+{% current_date as date %}
+<td><a href="{% url 'cinema:clientsessionlist' date  %}">Today sessions</a></td>
+<td><a href="{% url 'cinema:clientsessionlist' date|plus_days:1 %}">Tomorrow sessions</a></td>
+<td><a href="{% url "main" %}">Main</a> </td>
+</tr>
+
+ </table>
+<hr>

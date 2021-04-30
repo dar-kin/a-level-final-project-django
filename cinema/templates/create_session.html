@@ -2,9 +2,12 @@
 
 {% block title %} Create session {% endblock %}
 {% block content %}
+    {% include "user.html" %}
 <form method="post" action="{% url "cinema:createsession" %}">
+
 {{ form.as_p }}
 {% csrf_token %}
+<input type="submit" value="Create">
 </form>
 
 {% endblock %}

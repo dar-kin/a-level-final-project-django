@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+{% load alter_date %}
+
+{% block title %} Session list {% endblock %}
+{% block content %}
+    {% include "user.html" %}
+<div>
+<a href="{% url 'cinema:clientsessionlist' date 'start_time' %}">Sort by time</a>
+<a href="{% url 'cinema:clientsessionlist' date 'price' %}">Sort by price</a>
+</div>
+<table border="1">
+<tr>
+    <td>Start time</td>
+    <td>End time</td>
+    <td>Start date</td>
+    <td>End date</td>
+    <td>Hall</td>
+    <td>Price</td>
+</tr>
+{% for elem in object_list %}
+    <tr>
+    <td>{{ elem.start_time }}</td>
+    <td>{{ elem.end_time }}</td>
+    <td>{{ elem.start_date }}</td>
+    <td>{{ elem.end_date }}</td>
+    <td>{{ elem.hall.name }}</td>
+    <td>{{ elem.price }}</td>
+    {% if request.user.is_authenticated %}
+    <td><a href="{% url 'cinema:booksession' elem  date %}">Buy</a> </td>
+    {% endif %}
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

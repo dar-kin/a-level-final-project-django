@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from django.urls import reverse_lazy
 
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'customuser',
-    'cinema'
+    'cinema',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -121,7 +122,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 STATIC_URL = '/static/'
+STATIC_ROOT = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -130,3 +135,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "customuser.MyUser"
 LOGIN_URL = reverse_lazy("customuser:login")
 LOGIN_REDIRECT_URL = "/"
+SESSION_COOKIE_AGE = 300
+SESSION_SAVE_EVERY_REQUEST = True

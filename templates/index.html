@@ -3,11 +3,24 @@
 <html lang="en">
 <head>
 {% load static %}
-<script src="{% static 'js/forms.js' %}"></script>
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+    <link rel='stylesheet' href="{% static 'css/jquery-ui-timepicker-addon.css' %}" />
+<script src="{% static "js/jquery-ui.js" %}"></script>
+  <script src="{% static "js/jquery-ui-timepicker-addon.js"%}"></script>
+<script>
+    $( function() {
+        $( "#id_end_time" ).timepicker({ timeFormat: 'HH:mm', controlType: 'select', use24hours: true}).attr("autocomplete", "off") ;
+        $( "#id_end_date" ).datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true,}).attr("autocomplete", "off") ;
+        $( "#id_start_time" ).timepicker({ timeFormat: 'HH:mm',controlType: 'select', use24hours: true}).attr("autocomplete", "off") ;
+        $( "#id_start_date" ).datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true,}).attr("autocomplete", "off") ;
+    });
+  </script>
 </head>
 <body>
+
 {% if messages %}
     <ul class="messages">
         {% for message in messages %}

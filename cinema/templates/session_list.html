@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% block title %} Session list {% endblock %}
+{% block content %}
+    {% include "user.html" %}
+    <div><a href="{% url 'cinema:createsession' %}">Create session</a> </div>
+<table border="1">
+<tr>
+    <td>Start time</td>
+    <td>End time</td>
+    <td>Start date</td>
+    <td>End date</td>
+    <td>Hall</td>
+    <td>Price</td>
+</tr>
+{% for elem in object_list %}
+    <tr>
+    <td>{{ elem.start_time }}</td>
+    <td>{{ elem.end_time }}</td>
+    <td>{{ elem.start_date }}</td>
+    <td>{{ elem.end_date }}</td>
+    <td>{{ elem.hall.name }}</td>
+    <td>{{ elem.price }}</td>
+    <td><a href="{% url 'cinema:updatesession' elem.id %}">Update</a> </td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

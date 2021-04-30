@@ -2,9 +2,11 @@
 
 {% block title %} Update hall {% endblock %}
 {% block content %}
+    {% include "user.html" %}
 <form method="post" action="{% url "cinema:updatehall" object.id %}">
 {{ form.as_p }}
 {% csrf_token %}
+<input type="submit" value="Update">
 </form>
 
 {% endblock %}
