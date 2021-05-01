@@ -49,7 +49,7 @@ class TestSessionForm(TestCase):
         self.assertFalse(self.incorrect_form3.is_valid())
 
     def test_incorrect_form_error(self):
-        self.assertFalse(self.incorrect_form3.is_valid())
+        self.incorrect_form3.is_valid()
         error = "Incorrect date"
         self.assertEqual(error, self.incorrect_form3._errors["__all__"][0])
 

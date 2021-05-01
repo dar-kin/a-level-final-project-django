@@ -4,12 +4,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from customuser.views import MainView
+from api.views import CustomAuthToken
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("customuser/", include("customuser.urls", namespace="customuser")),
     path("cinema/", include("cinema.urls", namespace="cinema")),
-    path("jsi18n/", JavaScriptCatalog.as_view(), name="js-catalog"),
+    path("api/", include("api.urls", namespace="api")),
+    path('api-token-auth/', CustomAuthToken.as_view(), name="get-token"),
     path('', MainView.as_view(), name="main")
 ]
 
