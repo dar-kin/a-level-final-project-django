@@ -1,6 +1,6 @@
 from django.urls import path, register_converter
 from . import views
-from .misc import DateConverter, SessionConverter
+from .misc import DateConverter, SessionConverter, HallConverter, TimeConverter
 
 
 app_name = "cinema"
@@ -8,6 +8,8 @@ app_name = "cinema"
 
 register_converter(DateConverter, "date")
 register_converter(SessionConverter, "session")
+register_converter(HallConverter, "hall")
+register_converter(TimeConverter, "time")
 
 urlpatterns = [
     path("createhall/", views.CreateHallView.as_view(), name="createhall"),

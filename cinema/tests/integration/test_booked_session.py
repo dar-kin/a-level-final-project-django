@@ -39,7 +39,7 @@ class TestBookedSession(TestCase):
         response = self.client.post(reverse("cinema:booksession", args=[self.session, date(2021, 10, 4)]),
                                     data={"places": 1}, follow=True)
         with self.assertRaises(ObjectDoesNotExist):
-            BookedSession.objects.get(id=4)
+            BookedSession.objects.get(id=6)
 
     def test_correct_creation(self):
         self.client.force_login(self.user)

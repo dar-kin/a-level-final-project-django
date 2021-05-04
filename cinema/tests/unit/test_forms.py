@@ -74,9 +74,6 @@ class TestSessionForm(TestCase):
 
 
 class TestBookedSessionForm(TestCase):
-    fixtures = ["fixtures/users.json",
-                "fixtures/halls.json",
-                "fixtures/sessions.json"]
 
     def test_min_value_validator(self):
         form = BookedSessionForm(data={"places": 0})

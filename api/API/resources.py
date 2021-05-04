@@ -1,7 +1,14 @@
+from datetime import date
 from rest_framework import viewsets, mixins
 from cinema.models import Hall, Session, BookedSession
+from customuser.models import MyUser
 from rest_framework.response import Response
-from api.API.serializers import HallSerializer, SessionSerializer
+from rest_framework.decorators import action
+from django.db.models import Sum, F
+from django.db.models.functions import Coalesce
+from rest_framework.permissions import IsAuthenticated
+from api.API.serializers import HallSerializer, SessionSerializer, MyUserSerializer, \
+    BookedSessionSerializer, UserInfoBookedSessionsSerializer
 from api.misc import IsAdmin
 from cinema import exceptions
 
@@ -55,3 +62,79 @@ class SessionViewSet(mixins.ListModelMixin,
             return Response(data={"fail_message": "Booked sessions for this session exist"}, status=400)
         except exceptions.SessionsCollideException:
             return Response(data={"fail_message": "Session collides with another one"}, status=400)
+
+
+class ClientSessionView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        url_date = self.kwargs["date"]
+        queryset = queryset.filter(start_date__lte=url_date, end_date__gte=url_date).\
+            annotate(free_places=F("hall__size") - Coalesce(Sum(F("booked_sessions__places")), 0))
+        sort_options = ["start_time", "price"]
+        sort = self.kwargs.get("sort", None)
+        if sort in sort_options:
+            queryset = queryset.order_by(sort)
+        return queryset
+
+    @action(methods=["get"], detail=False)
+    def get_sessions_in_time(self, request, *args, **kwargs):
+        hall = self.kwargs.get("hall", None)
+        start_range = self.kwargs.get("start_range", None)
+        end_range = self.kwargs.get("end_range", None)
+        queryset = Session.objects.filter(start_date__lte=date.today(), end_date__gte=date.today())
+        if hall:
+            queryset = queryset.filter(hall=hall)
+        if start_range and end_range:
+            queryset = queryset.filter(start_time__gte=start_range, start_time__lte=end_range)
+        data = SessionSerializer(queryset, many=True).data
+        return Response(data=data, status=200)
+
+
+class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        response.data["success_message"] = "User was registered"
+        return response
+
+
+class BookedSessionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = BookedSession.objects.all()
+    serializer_class = BookedSessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, session=self.kwargs["s"], date=self.kwargs["date"])
+
+    def create(self, request, *args, **kwargs):
+        try:
+            response = super().create(request, *args, **kwargs)
+            response.data["success_message"] = "Session was booked"
+            return response
+        except exceptions.NoFreePlacesException:
+            return Response(status=400, data={"fail_message": "Not enough free places"})
+
+
+class BookedSessionListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = BookedSession.objects.all()
+    serializer_class = UserInfoBookedSessionsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        self.total_spent = queryset.aggregate(total=Sum(F("session__price") * F("places")))["total"]
+        if not self.total_spent:
+            self.total_spent = 0
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.data.append({"total_spent": self.total_spent})
+        return response
+

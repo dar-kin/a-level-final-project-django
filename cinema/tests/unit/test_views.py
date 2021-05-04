@@ -39,12 +39,13 @@ class TestCreateBookedSessionView(TestCase):
         self.client.force_login(self.user)
         request = self.client.get(path=reverse("cinema:booksession", args=[self.session, date(2021, 10, 4)]))
         context_data = request.context_data
-        self.assertEqual(3, context_data["places"])
+        self.assertEqual(0, context_data["places"])
 
     def test_context5(self):
-        BookedSession.objects.create(user=self.user, session=self.session, date=date(2021, 10, 4), places=2)
+        session = Session.objects.get(id=3)
+        BookedSession.objects.create(user=self.user, session=session, date=date(2021, 10, 4), places=2)
         self.client.force_login(self.user)
-        request = self.client.get(path=reverse("cinema:booksession", args=[self.session, date(2021, 10, 4)]))
+        request = self.client.get(path=reverse("cinema:booksession", args=[session, date(2021, 10, 4)]))
         context_data = request.context_data
         self.assertEqual(1, context_data["places"])
 
