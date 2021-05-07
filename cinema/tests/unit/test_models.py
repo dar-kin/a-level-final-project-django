@@ -2,7 +2,8 @@ from datetime import date, time
 from django.test import TestCase
 from cinema.models import Hall, Session, BookedSession
 from django.db.utils import IntegrityError
-from cinema.exceptions import SessionsCollideException, NoFreePlacesException, IncorrectDataException, BookedSessionExistsException
+from cinema.exceptions import SessionsCollideException, NoFreePlacesException, \
+    IncorrectDataException, BookedSessionExistsException, DateExpiredException
 from customuser.models import MyUser
 
 
@@ -189,6 +190,7 @@ class TestBookedSession(TestCase):
     def setUp(self) -> None:
         self.fully_booked_session = Session.objects.get(id=1)
         self.user = MyUser.objects.get(id=1)
+        self.hall = Hall.objects.get(id=1)
 
     def test_user_wallet_modified(self):
         BookedSession.objects.create(session=self.fully_booked_session,
@@ -242,4 +244,13 @@ class TestBookedSession(TestCase):
         with self.assertRaises(NoFreePlacesException):
             BookedSession.objects.create(session=self.fully_booked_session,
                                          user=self.user, date=date(2021, 10, 7), places=1)
+
+    def test_date_expired_exception(self):
+        session = Session.objects.create(start_time=time(10, 30), end_time=time(13, 20),
+                                         start_date=date(2021, 5, 1), end_date=date(2021, 6, 1),
+                                         hall=self.hall, price=16)
+
+        with self.assertRaises(DateExpiredException):
+            BookedSession.objects.create(session=session, places=1, user=self.user, date=date(2021, 5, 1))
+
 

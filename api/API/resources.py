@@ -76,8 +76,15 @@ class ClientSessionView(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         url_date = self.kwargs["date"]
-        queryset = queryset.filter(start_date__lte=url_date, end_date__gte=url_date).\
+        booked_sessions = BookedSession.objects.filter(date=url_date).values("session")
+        booked_sessions = queryset.filter(pk__in=booked_sessions). \
             annotate(free_places=F("hall__size") - Coalesce(Sum(F("booked_sessions__places")), 0))
+        # print(booked_sessions.values())
+        queryset = queryset.filter(start_date__lte=url_date, end_date__gte=url_date).exclude(pk__in=booked_sessions).\
+            annotate(free_places=F("hall__size"))
+        # print(queryset.values())
+        queryset = booked_sessions.union(queryset)
+        # print(queryset.values())
         sort_options = ["start_time", "price"]
         sort = self.kwargs.get("sort", None)
         if sort in sort_options:
@@ -125,6 +132,10 @@ class BookedSessionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, views
             return response
         except exceptions.NoFreePlacesException:
             return Response(status=400, data={"fail_message": "Not enough free places"})
+        except exceptions.IncorrectDataException:
+            return Response(status=400, data={"fail_message": "Incorrect data"})
+        except exceptions.DateExpiredException:
+            return Response(status=400, data={"fail_message": "Date expired"})
 
 
 class BookedSessionListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

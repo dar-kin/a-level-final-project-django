@@ -103,6 +103,9 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
         except exceptions.NoFreePlacesException:
             messages.add_message(self.request, messages.ERROR, "No free places")
             return redirect(self.request.path_info)
+        except exceptions.DateExpiredException:
+            messages.add_message(self.request, messages.ERROR, "Date expired")
+            return redirect(self.request.path_info)
         else:
             messages.add_message(self.request, messages.SUCCESS, "Session was booked")
             return redirect("/")

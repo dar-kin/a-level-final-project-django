@@ -1,8 +1,8 @@
-from datetime import date
+from datetime import date, time
 from django.test import TestCase
 from django.urls import reverse
 from django.db.models import ObjectDoesNotExist
-from cinema.models import Session, BookedSession
+from cinema.models import Session, BookedSession, Hall
 from customuser.models import MyUser
 
 
@@ -15,6 +15,7 @@ class TestBookedSession(TestCase):
     def setUp(self) -> None:
         self.user = MyUser.objects.get(id=2)
         self.session = Session.objects.get(id=1)
+        self.hall = Hall.objects.get(id=1)
 
     def test_unathorized_not_allowed(self):
         response = self.client.get(reverse("cinema:booksession", args=[self.session, date(2021, 10, 5)]))
@@ -27,6 +28,18 @@ class TestBookedSession(TestCase):
         messages = response.context["messages"]
         message = "No free places"
         self.assertEqual(message, str(list(messages)[0]))
+
+    def test_date_expired_error(self):
+        session = Session.objects.create(start_time=time(10, 30), end_time=time(13, 20),
+                                         start_date=date(2021, 5, 1), end_date=date(2021, 6, 1),
+                                         hall=self.hall, price=16)
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("cinema:booksession", args=[session, date(2021, 5, 4)]),
+                                    data={"places": 1}, follow=True)
+        messages = response.context["messages"]
+        message = "Date expired"
+        self.assertEqual(message, str(list(messages)[0]))
+
 
     def test_no_free_places_error_template(self):
         self.client.force_login(self.user)

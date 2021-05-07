@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.db.models import Q, F, Sum
 from django.core.validators import MinValueValidator
 from . import exceptions
@@ -74,6 +75,8 @@ class BookedSession(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if self.date < timezone.now().date():
+            raise exceptions.DateExpiredException
         if self.date < self.session.start_date or self.date > self.session.end_date:
             raise exceptions.IncorrectDataException
 

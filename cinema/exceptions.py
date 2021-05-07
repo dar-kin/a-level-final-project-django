@@ -16,3 +16,7 @@ class NoFreePlacesException(Exception):
 
 class BookedSessionExistsException(Exception):
     pass
+
+
+class DateExpiredException(Exception):
+    pass
