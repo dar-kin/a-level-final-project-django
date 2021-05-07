@@ -21,31 +21,31 @@ class TestBookedSession(TestCase):
 
     def test_unathorized_not_allowed(self):
         response = self.client.get(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 5)]))
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_no_free_places_error_message(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(self.user)
         response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 4)]),
                                     data={"places": 1}, follow=True)
         message = "Not enough free places"
         self.assertEqual(message, response.data["fail_message"])
 
     def test_no_free_places_not_created(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(self.user)
         response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 4)]),
                                     data={"places": 1}, follow=True)
         with self.assertRaises(ObjectDoesNotExist):
             BookedSession.objects.get(id=6)
 
     def test_correct_creation(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(self.user)
         response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 5)]),
                                     data={"places": 1}, follow=True)
         session = BookedSession.objects.get(id=6)
         self.assertTrue(session)
 
     def test_correct_creation_message(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(self.user)
         response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 5)]),
                                     data={"places": 1}, follow=True)
         message = "Session was booked"
@@ -66,24 +66,24 @@ class TestBookedSessionList(TestCase):
 
     def test_not_allowed_unathorized(self):
         response = self.client.get(reverse("api:my-booked-sessions"))
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_booked_session_list(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(self.user)
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user), many=True).data
         booked_sessions.append({"total_spent": 30})
         self.assertEqual(booked_sessions, response.data)
 
     def test_booked_session_list1(self):
-        self.client.force_login(self.user3)
+        self.client.force_authenticate(self.user3)
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user3), many=True).data
         booked_sessions.append({"total_spent": 30})
         self.assertEqual(booked_sessions, response.data)
 
     def test_booked_session_list2(self):
-        self.client.force_login(self.user2)
+        self.client.force_authenticate(self.user2)
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user2), many=True).data
         booked_sessions.append({"total_spent": 0})

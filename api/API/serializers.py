@@ -31,7 +31,7 @@ class MyUserSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
-    free_places = serializers.IntegerField(validators=[MinValueValidator(0)], required=False)
+    free_places = serializers.IntegerField(validators=[MinValueValidator(0)], required=False, read_only=True)
 
     def validate(self, attrs):
         data = super().validate(attrs)

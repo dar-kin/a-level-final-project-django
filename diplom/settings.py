@@ -80,9 +80,11 @@ WSGI_APPLICATION = 'diplom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "diplom",
+        'USER': 'darkin',
+        'PASSWORD': 'letmein'
+    },
 }
 
 
@@ -137,4 +139,4 @@ LOGIN_URL = reverse_lazy("customuser:login")
 LOGIN_REDIRECT_URL = "/"
 SESSION_COOKIE_AGE = 300
 SESSION_SAVE_EVERY_REQUEST = True
-TOKEN_EXPIRING_TIME = 60 * 5
+TOKEN_EXPIRING_TIME = 60

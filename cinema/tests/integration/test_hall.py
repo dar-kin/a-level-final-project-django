@@ -57,7 +57,7 @@ class TestCreateHall(TestCase):
     def test_hall_is_actually_created(self):
         self.client.force_login(self.s_user)
         response = self.client.post(reverse("cinema:createhall"), self.correct_data)
-        self.assertEqual("hall", Hall.objects.get(id=2).name)
+        self.assertTrue(Hall.objects.get(name="hall"))
 
     def test_success_redirect(self):
         self.client.force_login(self.s_user)

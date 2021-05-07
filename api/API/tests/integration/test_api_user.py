@@ -34,7 +34,7 @@ class TestRegistration(TestCase):
 
     def test_correct_creation(self):
         response = self.client.post("/api/users/", self.correct_data)
-        self.assertTrue(MyUser.objects.get(id=2))
+        self.assertTrue(MyUser.objects.get(username="darkin1"))
 
     def test_correct_message(self):
         response = self.client.post("/api/users/", self.correct_data)

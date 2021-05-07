@@ -7,10 +7,12 @@ from rest_framework.decorators import action
 from django.db.models import Sum, F
 from django.db.models.functions import Coalesce
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from api.API.serializers import HallSerializer, SessionSerializer, MyUserSerializer, \
     BookedSessionSerializer, UserInfoBookedSessionsSerializer
 from api.misc import IsAdmin
 from cinema import exceptions
+from api.misc import ExpiringTokenAuthentication
 
 
 class HallViewSet(mixins.ListModelMixin,
@@ -21,6 +23,7 @@ class HallViewSet(mixins.ListModelMixin,
     queryset = Hall.objects.all()
     serializer_class = HallSerializer
     permission_classes = [IsAdmin]
+    authentication_classes = [ExpiringTokenAuthentication]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -44,6 +47,7 @@ class SessionViewSet(mixins.ListModelMixin,
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
     permission_classes = [IsAdmin]
+    authentication_classes = [ExpiringTokenAuthentication]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -67,6 +71,7 @@ class SessionViewSet(mixins.ListModelMixin,
 class ClientSessionView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -96,6 +101,7 @@ class ClientSessionView(mixins.ListModelMixin, viewsets.GenericViewSet):
 class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -107,6 +113,7 @@ class BookedSessionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, views
     queryset = BookedSession.objects.all()
     serializer_class = BookedSessionSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [ExpiringTokenAuthentication]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, session=self.kwargs["s"], date=self.kwargs["date"])
@@ -124,6 +131,7 @@ class BookedSessionListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = BookedSession.objects.all()
     serializer_class = UserInfoBookedSessionsSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [ExpiringTokenAuthentication]
 
     def get_queryset(self):
         queryset = super().get_queryset()

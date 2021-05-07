@@ -114,7 +114,7 @@ class TestUserSerializer(TestCase):
     def test_user_is_created(self):
         self.correct_serializer.is_valid()
         user = self.correct_serializer.save()
-        self.assertEqual(MyUser.objects.get(id=2), user)
+        self.assertEqual(MyUser.objects.get(username="darkin2"), user)
 
 
 class TestBookedSessionSerializer(TestCase):

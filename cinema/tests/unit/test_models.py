@@ -28,8 +28,7 @@ class TestHall(TestCase):
             hall = Hall.objects.create(name="hall1", size="fdkmsj")
 
     def test_object_created(self):
-        hall = Hall.objects.get(id=1)
-        self.assertEqual("hall", hall.name)
+        self.assertTrue(Hall.objects.get(name="hall"))
 
     def test_non_modfiable_hall_with_booked_sessions(self):
         with self.assertRaises(BookedSessionExistsException):
@@ -61,12 +60,11 @@ class TestSession(TestCase):
         self.midnight_session.save()
 
     def test_incorrect_session_update2(self):
-        session = Session.objects.get(id=1)
         with self.assertRaises(SessionsCollideException):
-            session.start_date = date(year=2021, month=8, day=6)
-            session.end_date = date(year=2021, month=9, day=6)
-            session.hall = self.hall2
-            session.save()
+            self.session1.start_date = date(year=2021, month=8, day=6)
+            self.session1.end_date = date(year=2021, month=9, day=6)
+            self.session1.hall = self.hall2
+            self.session1.save()
 
     def test_session_collision(self):
         with self.assertRaises(SessionsCollideException):
@@ -172,10 +170,9 @@ class TestSession(TestCase):
         self.assertTrue(session.id)
 
     def test_update_session(self):
-        session = Session.objects.get(id=1)
-        session.start_date = date(2021, 10, 10)
-        session.end_date = date(2021, 11, 9)
-        session.save()
+        self.session1.start_date = date(2021, 10, 10)
+        self.session1.end_date = date(2021, 11, 9)
+        self.session1.save()
 
     def test_unmodifiable_booked_session(self):
         BookedSession.objects.create(session=self.session1, date=date(2021, 10, 2), user=self.user, places=1)
