@@ -144,4 +144,4 @@ class TestHallList(TestCase):
         serializer = HallSerializer(halls, many=True)
         self.client.force_authenticate(self.s_user)
         response = self.client.get(reverse("api:hall-list"))
-        self.assertQuerysetEqual(serializer.data, response.data)
+        self.assertQuerysetEqual(serializer.data, response.data["results"])

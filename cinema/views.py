@@ -114,36 +114,49 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
 class HallList(SuperUserRequired, ListView):
     model = Hall
     template_name = "hall_list.html"
+    paginate_by = 50
 
 
 class SessionList(SuperUserRequired, ListView):
     template_name = "session_list.html"
     model = Session
+    paginate_by = 50
 
 
 class ClientSessionList(ListView):
     model = Session
     template_name = "user_session_list.html"
+    paginate_by = 50
+
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        url_date = self.kwargs["date"]
+        query_set = query_set.filter(start_date__lte=url_date, end_date__gte=url_date)
+        sort_options = ["start_time", "price"]
+        sort = self.kwargs.get("sort", None)
+        if sort in sort_options:
+            query_set = query_set.order_by(sort)
+        return query_set
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
         url_date = self.kwargs["date"]
-        context["object_list"] = context["object_list"].filter(start_date__lte=url_date, end_date__gte=url_date)
         context["date"] = url_date
-        sort_options = ["start_time", "price"]
-        sort = self.kwargs.get("sort", None)
-        if sort in sort_options:
-            context["object_list"] = context["object_list"].order_by(sort)
         return context
 
 
 class UserBookedSessionsList(LoginRequiredMixin, ListView):
     model = BookedSession
     template_name = "booked_sessions_list.html"
+    paginate_by = 50
+
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        query_set = query_set.filter(user=self.request.user)
+        return query_set
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
-        context["object_list"] = context["object_list"].filter(user=self.request.user)
         total_spent = context["object_list"].aggregate(total=Sum(F("session__price") * F("places")))["total"]
         if not total_spent:
             total_spent = 0

@@ -24,7 +24,7 @@ class TestUserSessionListContextData(TestCase):
 
     def test_correct_object_count(self):
         response = self.client.get(reverse("api:clients-session-list", args=[date(2021, 11, 3)]))
-        sessions = response.data
+        sessions = response.data["results"]
         self.assertEqual(1, len(sessions))
 
     def test_correct_object_count1(self):
@@ -34,17 +34,17 @@ class TestUserSessionListContextData(TestCase):
 
     def test_no_sessions(self):
         response = self.client.get(reverse("api:clients-session-list", args=[date(2021, 9, 4)]))
-        sessions = response.data
+        sessions = response.data["results"]
         self.assertEqual(0, len(sessions))
 
     def test_no_sessions1(self):
         response = self.client.get(reverse("api:clients-session-list", args=[date(2021, 10, 2)]))
-        sessions = response.data
+        sessions = response.data["results"]
         self.assertEqual(0, len(sessions))
 
     def test_correct_sort_by_time(self):
         response = self.client.get(reverse("api:clients-session-list", args=[date(2021, 10, 4), "start_time"]))
-        sessions = response.data
+        sessions = response.data['results']
         remove_free_places(sessions)
         expected = SessionSerializer(Session.objects.filter(
             start_date__lte=date(2021, 10, 4), end_date__gte=date(2021, 10, 4)).order_by("start_time"), many=True).data
@@ -52,7 +52,7 @@ class TestUserSessionListContextData(TestCase):
 
     def test_correct_sort_by_price(self):
         response = self.client.get(reverse("api:clients-session-list", args=[date(2021, 10, 4), "price"]))
-        sessions = response.data
+        sessions = response.data["results"]
         remove_free_places(sessions)
         expected = SessionSerializer(Session.objects.filter(
             start_date__lte=date(2021, 10, 4), end_date__gte=date(2021, 10, 4)).order_by("price"), many=True).data

@@ -154,6 +154,6 @@ class BookedSessionListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        response.data.append({"total_spent": self.total_spent})
+        response.data["results"].append({"total_spent": self.total_spent})
         return response
 

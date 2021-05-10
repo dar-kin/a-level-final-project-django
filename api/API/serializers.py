@@ -32,21 +32,25 @@ class MyUserSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     free_places = serializers.IntegerField(validators=[MinValueValidator(0)], required=False, read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        start_date = data['start_date']
-        end_date = data['end_date']
-        start_time = data['start_time']
-        end_time = data['end_time']
-        if (start_date > end_date) or ((start_date == end_date) and (start_time >= end_time)) \
-                or end_date < now().date():
+        start_date = data.get("start_date", None) or self.instance.start_date
+        end_date = data.get("end_date", None) or self.instance.end_date
+        start_time = data.get("start_time", None) or self.instance.start_time
+        end_time = data.get("end_time", None) or self.instance.end_time
+        cond1 = start_date > end_date
+        cond2 = start_date == end_date
+        cond3 = start_time >= end_time
+        cond4 = end_date < now().date()
+        if cond1 or cond2 and cond3 or cond4:
             raise serializers.ValidationError("Incorrect date")
 
         return data
 
     class Meta:
-        fields = ["start_date", "end_date", "start_time", "end_time", "hall", "price", "free_places"]
+        fields = ["id", "start_date", "end_date", "start_time", "end_time", "hall", "price", "free_places"]
         model = Session
 
 

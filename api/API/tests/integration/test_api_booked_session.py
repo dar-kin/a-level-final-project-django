@@ -84,18 +84,18 @@ class TestBookedSessionList(TestCase):
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user), many=True).data
         booked_sessions.append({"total_spent": 30})
-        self.assertEqual(booked_sessions, response.data)
+        self.assertEqual(booked_sessions, response.data["results"])
 
     def test_booked_session_list1(self):
         self.client.force_authenticate(self.user3)
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user3), many=True).data
         booked_sessions.append({"total_spent": 30})
-        self.assertEqual(booked_sessions, response.data)
+        self.assertEqual(booked_sessions, response.data["results"])
 
     def test_booked_session_list2(self):
         self.client.force_authenticate(self.user2)
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user2), many=True).data
         booked_sessions.append({"total_spent": 0})
-        self.assertEqual(booked_sessions, response.data)
+        self.assertEqual(booked_sessions, response.data["results"])

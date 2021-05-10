@@ -1,3 +1,5 @@
+from django.utils import timezone
+from django.conf import settings
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -14,4 +16,7 @@ class CustomAuthToken(ObtainAuthToken):
         if not user:
             return Response(status=403, data={"fail_message": "incorrect credentials"})
         token, created = ExpiringToken.objects.get_or_create(user=user)
+        if (timezone.now() - token.last_action).seconds > settings.TOKEN_EXPIRING_TIME:
+            token.delete()
+            token = ExpiringToken.objects.create(user=user)
         return Response({'token': token.key})

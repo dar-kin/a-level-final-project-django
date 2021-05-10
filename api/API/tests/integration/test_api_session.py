@@ -131,7 +131,7 @@ class TestUpdateSession(TestCase):
 
     def test_booked_session_exist(self):
         self.client.force_authenticate(self.s_user)
-        response = self.client.put(reverse("api:session-detail", args=[1]), self.correct_session)
+        response = self.client.patch(reverse("api:session-detail", args=[1]), self.correct_session)
         message = "Booked sessions for this session exist"
         self.assertEqual(message, response.data["fail_message"])
 
@@ -141,8 +141,9 @@ class TestUpdateSession(TestCase):
         self.assertEqual(time(18), Session.objects.get(id=3).start_time)
 
     def test_success_message(self):
+        data = {"start_time": time(9)}
         self.client.force_authenticate(self.s_user)
-        response = self.client.put(reverse("api:session-detail", args=[3]), self.correct_session, follow=True)
+        response = self.client.patch(reverse("api:session-detail", args=[3]), data)
         message = "Session was updated"
         self.assertEqual(message, response.data["success_message"])
 
@@ -169,4 +170,4 @@ class TestSessionList(TestCase):
         serializer = SessionSerializer(sessions, many=True)
         self.client.force_authenticate(self.s_user)
         response = self.client.get(reverse("api:session-list"))
-        self.assertQuerysetEqual(serializer.data, response.data)
+        self.assertQuerysetEqual(serializer.data, response.data["results"])
