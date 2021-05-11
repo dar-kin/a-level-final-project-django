@@ -83,7 +83,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': "diplom",
         'USER': 'darkin',
-        'PASSWORD': 'letmein'
+        'PASSWORD': 'letmein',
+        "TEST": {
+            "NAME": "testdb"
+        }
     },
 }
 

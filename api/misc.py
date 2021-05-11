@@ -5,7 +5,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.authentication import TokenAuthentication
 from .models import ExpiringToken
 
-
 class IsAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_superuser
