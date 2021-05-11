@@ -20,3 +20,7 @@ class BookedSessionExistsException(Exception):
 
 class DateExpiredException(Exception):
     pass
+
+
+class NotEnoughMoneyException(Exception):
+    pass

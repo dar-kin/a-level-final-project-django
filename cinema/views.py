@@ -106,6 +106,9 @@ class CreateBookedSessionView(LoginRequiredMixin, CreateView):
         except exceptions.DateExpiredException:
             messages.add_message(self.request, messages.ERROR, "Date expired")
             return redirect(self.request.path_info)
+        except exceptions.NotEnoughMoneyException:
+            messages.add_message(self.request, messages.ERROR, "Not enough money")
+            return redirect(self.request.path_info)
         else:
             messages.add_message(self.request, messages.SUCCESS, "Session was booked")
             return redirect("/")

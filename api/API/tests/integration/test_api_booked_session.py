@@ -31,6 +31,14 @@ class TestBookedSession(TestCase):
         message = "Not enough free places"
         self.assertEqual(message, response.data["fail_message"])
 
+    def test_not_enough_money_message(self):
+        user = MyUser.objects.create_user(username="ppl", password="1", wallet=0)
+        self.client.force_authenticate(user)
+        response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 10)]),
+                                    data={"places": 1}, follow=True)
+        message = "Not enough money"
+        self.assertEqual(message, response.data["fail_message"])
+
     def test_no_free_places_not_created(self):
         self.client.force_authenticate(self.user)
         response = self.client.post(reverse("api:create-booked-session", args=[self.session, date(2021, 10, 4)]),
@@ -84,6 +92,7 @@ class TestBookedSessionList(TestCase):
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user), many=True).data
         booked_sessions.append({"total_spent": 30})
+        booked_sessions.append({"current_money": 10000})
         self.assertEqual(booked_sessions, response.data["results"])
 
     def test_booked_session_list1(self):
@@ -91,6 +100,7 @@ class TestBookedSessionList(TestCase):
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user3), many=True).data
         booked_sessions.append({"total_spent": 30})
+        booked_sessions.append({"current_money": 10000})
         self.assertEqual(booked_sessions, response.data["results"])
 
     def test_booked_session_list2(self):
@@ -98,4 +108,5 @@ class TestBookedSessionList(TestCase):
         response = self.client.get(reverse("api:my-booked-sessions"))
         booked_sessions = UserInfoBookedSessionsSerializer(BookedSession.objects.filter(user=self.user2), many=True).data
         booked_sessions.append({"total_spent": 0})
+        booked_sessions.append({"current_money": 10000000})
         self.assertEqual(booked_sessions, response.data["results"])

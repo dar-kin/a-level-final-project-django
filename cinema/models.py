@@ -88,6 +88,8 @@ class BookedSession(models.Model):
             places += self.places
         if places > self.session.hall.size:
             raise exceptions.NoFreePlacesException
+        if self.user.wallet < self.session.price * places:
+            raise exceptions.NotEnoughMoneyException
         self.user.wallet -= self.session.price * self.places
         self.user.save()
         super().save(force_insert=False, force_update=False, using=None, update_fields=None)

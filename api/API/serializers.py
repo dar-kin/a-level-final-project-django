@@ -27,7 +27,7 @@ class MyUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ["id", "username", "password", "password2"]
+        fields = ["id", "username", "password", "password2", "wallet"]
 
 
 class SessionSerializer(serializers.ModelSerializer):

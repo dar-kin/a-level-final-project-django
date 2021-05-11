@@ -134,6 +134,8 @@ class BookedSessionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, views
             return Response(status=400, data={"fail_message": "Not enough free places"})
         except exceptions.IncorrectDataException:
             return Response(status=400, data={"fail_message": "Incorrect data"})
+        except exceptions.NotEnoughMoneyException:
+            return Response(status=400, data={"fail_message": "Not enough money"})
         except exceptions.DateExpiredException:
             return Response(status=400, data={"fail_message": "Date expired"})
 
@@ -155,5 +157,6 @@ class BookedSessionListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         response.data["results"].append({"total_spent": self.total_spent})
+        response.data["results"].append({"current_money": self.request.user.wallet})
         return response
 

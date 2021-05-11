@@ -3,7 +3,7 @@ from django.test import TestCase
 from cinema.models import Hall, Session, BookedSession
 from django.db.utils import IntegrityError
 from cinema.exceptions import SessionsCollideException, NoFreePlacesException, \
-    IncorrectDataException, BookedSessionExistsException, DateExpiredException
+    IncorrectDataException, BookedSessionExistsException, DateExpiredException, NotEnoughMoneyException
 from customuser.models import MyUser
 
 
@@ -252,5 +252,11 @@ class TestBookedSession(TestCase):
 
         with self.assertRaises(DateExpiredException):
             BookedSession.objects.create(session=session, places=1, user=self.user, date=date(2021, 5, 1))
+
+    def test_not_enough_money_exception(self):
+        user = MyUser.objects.create_user(username="ppl", password="1", wallet=0)
+        with self.assertRaises(NotEnoughMoneyException):
+            BookedSession.objects.create(session=self.fully_booked_session, places=1, user=user, date=date(2021, 10, 7))
+
 
 

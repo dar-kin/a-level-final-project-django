@@ -54,6 +54,15 @@ class TestBookedSession(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             BookedSession.objects.get(id=6)
 
+    def test_not_enough_money_message(self):
+        user = MyUser.objects.create_user(username="ppl", password="1", wallet=0)
+        self.client.force_login(user)
+        response = self.client.post(reverse("cinema:booksession", args=[self.session, date(2021, 10, 10)]),
+                                    data={"places": 1}, follow=True)
+        messages = response.context["messages"]
+        message = "Not enough money"
+        self.assertEqual(message, str(list(messages)[0]))
+
     def test_correct_creation(self):
         self.client.force_login(self.user)
         response = self.client.post(reverse("cinema:booksession", args=[self.session, date(2021, 10, 5)]),
